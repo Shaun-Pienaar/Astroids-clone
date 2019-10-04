@@ -19,12 +19,10 @@ let bullets = [];
 let astroids = [];
 
 //Other variables
-let inputType = 1;
 let canFire = 0;
 let score = 0;
 let level = 0;
 let objectSize;
-let buttonSize;
 let showMenu = true;
 let gameOver = false;
 let highscores = [];
@@ -66,11 +64,6 @@ function draw() {
   if(showMenu){
     displayMenu();
     if(keyIsPressed){
-      inputType = 0;
-      startGame();
-    }
-    if(touches[0]){
-      inputType = 1;
       startGame();
     }
   }
@@ -89,19 +82,11 @@ function draw() {
         canFire--;
       }
       //Run Gameloop
-      if(inputType === 0){
-        checkInput();
-      }
-      else{
-        checkTouchInput();
-      }
+      checkInput();
       updateGameObjects();
       checkCollisions();
       renderFrame();
       displayScore();
-      if(inputType !== 0){
-        drawButtons();
-      }
     }
   }
 }
@@ -200,52 +185,6 @@ function checkInput(){
   }
 }
 
-function checkTouchInput(){
-  for(touch of touches){
-    if(touch.x < round(buttonSize*2.5) && touch.x > round(buttonSize/2) && touch.y < height-round(buttonSize/2) && touch.y > height-round(buttonSize*1.5)){
-      if(!(canFire > 0)){
-        bullets.push(player.fire());
-        canFire = 20;
-        shootSfx.play();
-      }
-      continue;
-    }
-    if(touch.x < width-round(buttonSize*1.5) && touch.x > width-round(buttonSize*2.5) && touch.y < height-round(buttonSize*1.5) && touch.y > height-round(buttonSize*2.5)){
-      player.accelerating = true;
-      continue;
-    }
-    else{
-      player.accelerating = false;
-    }
-    if(touch.x < width-round(buttonSize*2.5) && touch.x > width-round(buttonSize*3.5) && touch.y < height-round(buttonSize/2) && touch.y > height-round(buttonSize*1.5)){
-      player.turnLeft();
-      continue;
-    }
-    if(touch.x < width-round(buttonSize/2) && touch.x > width-round(buttonSize*1.5) && touch.y < height-round(buttonSize/2) && touch.y > height-round(buttonSize*1.5)){
-      player.turnRight();
-      continue;
-    }
-  }
-}
-
-function drawButtons(){
-  stroke(255);
-  noFill();
-  strokeWeight(1);
-  //Fire button
-  rect(floor(buttonSize/2), height-floor(buttonSize*1.5), buttonSize*2, buttonSize);
-  textAlign(CENTER);
-  textSize(round(buttonSize/2));
-  textStyle(NORMAL);
-  text('Fire', round(buttonSize/2), height-floor(buttonSize*1.5), buttonSize*2, buttonSize);
-  //Up button
-  triangle(width-round(buttonSize*2.5), height-round(buttonSize*1.5), width-buttonSize*2, height-round(buttonSize*2.5), width-round(buttonSize*1.5), height-round(buttonSize*1.5));
-  //Left button
-  triangle(width-round(buttonSize*2.5), height-round(buttonSize*1.5), width-round(buttonSize*2.5), height-round(buttonSize/2), width-round(buttonSize*3.5), height-buttonSize);
-  //Right button
-  triangle(width-round(buttonSize*1.5), height-round(buttonSize*1.5), width-round(buttonSize/2), height-buttonSize, width-round(buttonSize*1.5), height-round(buttonSize/2));
-}
-
 function startGame(){
   showMenu = false;
   gameOver = false;
@@ -305,6 +244,7 @@ function startLevel(){
   textFont('Times New Roman', round(objectSize/14*5.5));
   text('Stage ' + level, width/2-125, height/2-objectSize, 250, 100);
   noLoop();
+  player.pos = createVector(width/2,height/2);
   setTimeout(() => {
     createAstroids();
     loop();
